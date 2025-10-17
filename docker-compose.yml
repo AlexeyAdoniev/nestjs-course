@@ -1,0 +1,17 @@
+services:
+  postgres:
+    image: postgres:18
+    container_name: postgres18
+    restart: always
+    ports:
+      - '5432:5432' # Map port 5432 on the host to port 5432 in the container
+    environment:
+      POSTGRES_USER: postgres # Default username
+      POSTGRES_PASSWORD: ${DB_PASS} # Default password
+      POSTGRES_DB: postgres # Default database name
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Persistent storage for database data
+
+volumes:
+  postgres_data:
+    driver: local
