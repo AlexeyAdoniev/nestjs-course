@@ -1,10 +1,11 @@
 import { IsOptional, IsPositive } from 'class-validator';
+import { IsCardinal } from '../decorators/is-cardinal.decorator';
 
 export class PaginationDto {
-  @IsPositive()
+  @IsCardinal()
   @IsOptional()
   limit: number;
-  @IsPositive()
+  @IsCardinal()
   @IsOptional()
   offset: number;
 }
