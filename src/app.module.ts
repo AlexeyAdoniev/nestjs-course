@@ -5,9 +5,10 @@ import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
 import { EmailModule } from './domain/email/email.module';
 import { EnvModule } from './env/env.module';
+import { OrdersModule } from './domain/orders/orders.module';
 
 @Module({
-  imports: [UsersModule, CommonModule, DatabaseModule, EmailModule, EnvModule],
+  imports: [UsersModule, CommonModule, DatabaseModule, EmailModule, EnvModule, OrdersModule],
   controllers: [],
   providers: [],
 })

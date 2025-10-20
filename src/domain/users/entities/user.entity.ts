@@ -5,9 +5,11 @@ import {
   ManyToOne,
   OneToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { RegistryDates } from '../../../common/embedded/registry-dates.embedded';
 import { Email } from '../../email/entities/email.entity';
+import { Order } from '../../orders/entities/order.entity';
 
 @Entity()
 export class User {
@@ -22,6 +24,9 @@ export class User {
   password: string;
   @Column({ unique: true, type: 'varchar' })
   phone: string;
+
+  @OneToMany(() => Order, (order) => order.customer)
+  orders: Order[];
 
   @Column(() => RegistryDates, { prefix: false })
   registryDates: RegistryDates;
