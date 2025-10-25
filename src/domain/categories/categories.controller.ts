@@ -28,12 +28,12 @@ export class CategoriesController {
     return this.categoriesService.findAll(pagination);
   }
 
-  @Get()
-  findOne(@Param('id') { id }: IdDto) {
+  @Get(':id')
+  findOne(@Param() { id }: IdDto) {
     return this.categoriesService.findOne(id);
   }
 
-  @Patch()
+  @Patch(':id')
   update(
     @Param('id') { id }: IdDto,
     @Body() updateCategoryDto: UpdateCategoryDto,
@@ -41,7 +41,7 @@ export class CategoriesController {
     return this.categoriesService.update(id, updateCategoryDto);
   }
 
-  @Delete()
+  @Delete(':id')
   remove(@Param('id') { id }: IdDto) {
     return this.categoriesService.remove(id);
   }

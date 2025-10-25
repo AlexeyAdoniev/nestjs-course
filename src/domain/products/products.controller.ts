@@ -29,12 +29,12 @@ export class ProductsController {
     return this.productsService.findAll(PaginationDto);
   }
 
-  @Get()
+  @Get(':id')
   findOne(@Param('id') { id }: IdDto) {
     return this.productsService.findOne(id);
   }
 
-  @Patch()
+  @Patch(':id')
   update(
     @Param('id') { id }: IdDto,
     @Body() updateProductDto: UpdateProductDto,
@@ -42,7 +42,7 @@ export class ProductsController {
     return this.productsService.update(id, updateProductDto);
   }
 
-  @Delete()
+  @Delete(':id')
   remove(@Param('id') { id }: IdDto) {
     return this.productsService.remove(id);
   }
