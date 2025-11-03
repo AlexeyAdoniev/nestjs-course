@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigService, ConfigModule } from '@nestjs/config';
+import { SeedingModule } from './seeding/seeding.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ConfigService, ConfigModule } from '@nestjs/config';
       //   username: "postgres",
       //   password: ConfigObject.
     }),
+    SeedingModule,
   ],
 })
 export class DatabaseModule {}

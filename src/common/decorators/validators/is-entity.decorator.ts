@@ -1,7 +1,7 @@
 import { applyDecorators } from '@nestjs/common';
 import { IsDefined, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
-import { IdDto } from '../dto/id.dto';
+import { IdDto } from '../../dto/id.dto';
 
 /**
  * 

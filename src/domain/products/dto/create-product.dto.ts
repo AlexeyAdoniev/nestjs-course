@@ -8,11 +8,11 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { IsCurrency } from '../../../common/decorators/is-curency.decorator';
+import { IsCurrency } from '../../../common/decorators/validators/is-curency.decorator';
 
 import { IdDto } from '../../../common/dto/id.dto';
-import { IsEntity } from '../../../common/decorators/is-entity.decorator';
-import { idDtoIdentifier } from '../../../common/util/id.util';
+import { IsEntity } from '../../../common/decorators/validators/is-entity.decorator';
+import { IdentifierFn } from '../../../common/util/id.util';
 
 export class CreateProductDto {
   @Length(2, 50)
@@ -26,7 +26,7 @@ export class CreateProductDto {
   readonly price: number;
 
   @ArrayNotEmpty()
-  @ArrayUnique(idDtoIdentifier)
+  @ArrayUnique(IdentifierFn.ID_DTO)
   @IsEntity()
   readonly categories: IdDto[];
 }

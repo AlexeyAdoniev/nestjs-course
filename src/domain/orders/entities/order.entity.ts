@@ -11,6 +11,7 @@ import { OrderStatus } from '../enums/order.status.enum';
 import { User } from '../../users/entities/user.entity';
 import { Payment } from '../../payment/entities/payment.entity';
 import { OrderItem } from './order-item.entity';
+import { Expose } from 'class-transformer';
 
 @Entity()
 export class Order {
@@ -21,7 +22,7 @@ export class Order {
     enum: OrderStatus,
     default: OrderStatus.AWAITING_PAYMENT,
   })
-  statis: OrderStatus;
+  status: OrderStatus;
   @Column(() => RegistryDates, { prefix: false })
   registryDates: RegistryDates;
 
@@ -33,4 +34,12 @@ export class Order {
 
   @OneToMany(() => OrderItem, (item) => item.order, { cascade: true })
   items: OrderItem[];
+
+  @Expose()
+  get total() {
+    return this.items?.reduce(
+      (total, item) => total + item.price * item.quantity,
+      0,
+    );
+  }
 }
