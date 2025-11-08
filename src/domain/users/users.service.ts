@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, Query } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+  Query,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -13,6 +18,22 @@ import databaseConfig from '../../database/config/database.config';
 
 @Injectable()
 export class UsersService {
+  async recover(id: number) {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      withDeleted: true,
+    });
+
+    if (!user) {
+      throw new NotFoundException();
+    }
+
+    if (!user.registryDates.deletedAt) {
+      throw new ConflictException();
+    }
+
+    return this.userRepository.recover([user]);
+  }
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
@@ -52,7 +73,10 @@ export class UsersService {
     const user = await this.userRepository.findOne({
       where: { id },
       relations: {
-        orders: true,
+        orders: {
+          items: true,
+          payment: true,
+        },
       },
       cache: 60_000,
     });
@@ -84,7 +108,9 @@ export class UsersService {
     return this.userRepository.save(merged);
   }
 
-  remove(id: number) {
-    return this.userRepository.delete({ id });
+  remove(id: number, soft: boolean) {
+    return soft
+      ? this.userRepository.softRemove({ id })
+      : this.userRepository.delete({ id });
   }
 }

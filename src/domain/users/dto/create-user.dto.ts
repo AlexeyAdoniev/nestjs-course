@@ -5,6 +5,7 @@ import {
   IsEmail,
   IsPhoneNumber,
   IsInt,
+  Matches,
 } from 'class-validator';
 
 export class CreateUserDto {
@@ -12,7 +13,7 @@ export class CreateUserDto {
   readonly name: string;
   @IsInt()
   readonly email: number;
-  @IsString()
+  @Matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/)
   readonly password: string;
   @IsPhoneNumber()
   readonly phone: string;

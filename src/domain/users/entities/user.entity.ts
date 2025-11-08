@@ -25,7 +25,9 @@ export class User {
   @Column({ unique: true, type: 'varchar' })
   phone: string;
 
-  @OneToMany(() => Order, (order) => order.customer)
+  @OneToMany(() => Order, (order) => order.customer, {
+    cascade: ['soft-remove', 'recover'],
+  })
   orders: Order[];
 
   @Column(() => RegistryDates, { prefix: false })
