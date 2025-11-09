@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { VALIDATION_PIPE_OPTIONS } from './util/common.constants';
+import { CryptoUtils } from './util/crypto';
 
 @Module({
   providers: [
