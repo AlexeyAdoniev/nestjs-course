@@ -16,9 +16,6 @@ import { isNumber } from 'class-validator';
 import { PaginationDto } from '../../common/dto/pagination.dto';
 import { DEFAULT_PAGE_SIZE } from '../../common/util/common.constants';
 
-import { CryptoUtils } from '../../common/util/crypto';
-import { HashingService } from '../../auth/hashing/hashing.service';
-
 @Injectable()
 export class UsersService {
   async recover(id: number) {
@@ -42,21 +39,15 @@ export class UsersService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Email)
     private readonly emailRepository: Repository<Email>,
-    private readonly crypto: HashingService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    const { password } = createUserDto;
-
-    const hashedPassword = await this.crypto.hash(password);
-
     const email = await this.emailRepository.findOneBy({
       id: createUserDto.email,
     });
     const user = this.userRepository.create({
       ...createUserDto,
       email,
-      password: hashedPassword,
     });
     return this.userRepository.save(user);
   }
@@ -102,13 +93,8 @@ export class UsersService {
       throw new NotFoundException('User not found');
     }
 
-    const { password } = updateUserDto;
-
-    const hashedPassword = password && (await this.crypto.hash(password));
-
     const payload: Partial<User> = {
       ...updateUserDto,
-      password: hashedPassword || password,
       email: undefined,
     };
 
