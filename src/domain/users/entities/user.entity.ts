@@ -2,7 +2,6 @@ import {
   Column,
   Entity,
   PrimaryGeneratedColumn,
-  ManyToOne,
   OneToOne,
   JoinColumn,
   OneToMany,
@@ -10,6 +9,7 @@ import {
 import { RegistryDates } from '../../../common/embedded/registry-dates.embedded';
 import { Email } from '../../email/entities/email.entity';
 import { Order } from '../../orders/entities/order.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class User {
@@ -20,8 +20,12 @@ export class User {
   @OneToOne(() => Email)
   @JoinColumn()
   email: Email;
+  @Exclude()
   @Column()
   password: string;
+
+  @Column({ nullable: true, type: 'varchar' })
+  salt: string;
   @Column({ unique: true, type: 'varchar' })
   phone: string;
 

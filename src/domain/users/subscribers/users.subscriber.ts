@@ -23,7 +23,11 @@ export class UserSubscriber implements EntitySubscriberInterface {
 
   async beforeInsert(event: InsertEvent<User>) {
     const { entity: user } = event;
-    user.password = await this.hashingService.hash(user.password);
+    const { hashedPassword, salt } = await this.hashingService.hash(
+      user.password,
+    );
+    user.password = hashedPassword;
+    user.salt = salt;
   }
 
   async beforeUpdate(event: UpdateEvent<User>) {
@@ -31,7 +35,11 @@ export class UserSubscriber implements EntitySubscriberInterface {
     const user = entity as User;
 
     if (user.password !== databaseUser.password) {
-      user.password = await this.hashingService.hash(user.password);
+      const { hashedPassword, salt } = await this.hashingService.hash(
+        user.password,
+      );
+      user.password = hashedPassword;
+      user.salt = salt;
     }
   }
 }
