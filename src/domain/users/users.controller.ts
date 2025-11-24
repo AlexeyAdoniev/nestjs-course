@@ -14,14 +14,15 @@ import { UpdateUserDto } from './dto/update-user.dto';
 
 import { IdDto } from '../../common/dto/id.dto';
 
-import { ConfigService } from '@nestjs/config';
 import { PaginationDto } from '../../common/dto/pagination.dto';
 import { RemoveDto } from '../orders/dto/remove.dto';
+import { Public } from '../../auth/decorators/public.decorator';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @Public()
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);

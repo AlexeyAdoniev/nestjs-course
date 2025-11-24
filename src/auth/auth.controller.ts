@@ -5,12 +5,17 @@ import {
   HttpStatus,
   Post,
   Request,
+  Get,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LoginDto } from './dto/login.dto';
-import { AuthGuard } from '@nestjs/passport';
+
 import { LocalAuthGuardGuard } from './guards/local-auth-guard/local-auth-guard.guard';
+import { User } from './decorators/user.decorator';
+import type { RequestUser } from './interfaces/request-user.interface';
+import type { Response } from 'express';
+import { Public } from './decorators/public.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -18,11 +23,23 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @UseGuards(LocalAuthGuardGuard)
+  @Public()
   @Post('login')
-  login(@Request() req) {
-    return req.user;
+  login(
+    @User() user: RequestUser,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const token = this.authService.login(user);
+    response.cookie('token', token, {
+      secure: true,
+      httpOnly: true,
+      sameSite: true,
+    });
   }
-  // login(@Body() loginDto: LoginDto) {
-  //   return this.authService.validateLocal(loginDto.email, loginDto.password);
-  // }
+
+  // @UseGuards(JwtAuthGuardGuard)
+  @Get('profile')
+  getProfile(@User() { id }: RequestUser) {
+    return this.authService.getProfile(id);
+  }
 }

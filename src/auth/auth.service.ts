@@ -3,13 +3,30 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../domain/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { HashingService } from './hashing/hashing.service';
+import { RequestUser } from './interfaces/request-user.interface';
+import { JwtService } from '@nestjs/jwt';
+import { JWTPayload } from './interfaces/jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
+  getProfile(id: number) {
+    return this.userRepository.findOneBy({ id });
+  }
+  async validateJwt(payload: JWTPayload) {
+    const user = await this.userRepository.findOneBy({ id: payload.sub });
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    const requestUser: RequestUser = { id: payload.sub };
+
+    return requestUser;
+  }
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly hashingService: HashingService,
+    private readonly jwtService: JwtService,
   ) {}
 
   async validateLocal(email: string, password: string) {
@@ -34,6 +51,16 @@ export class AuthService {
       throw new UnauthorizedException('Invalid password');
     }
 
-    return { id: user.id };
+    const requestUser: RequestUser = { id: user.id };
+
+    return requestUser;
+  }
+
+  login(user: RequestUser) {
+    const payload: JWTPayload = {
+      sub: user.id,
+    };
+
+    return this.jwtService.sign(payload);
   }
 }

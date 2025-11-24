@@ -1,13 +1,10 @@
 import {
   ArrayNotEmpty,
   ArrayUnique,
-  IsNumber,
   IsOptional,
-  IsPositive,
   Length,
-  ValidateNested,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+
 import { IsCurrency } from '../../../common/decorators/validators/is-curency.decorator';
 
 import { IdDto } from '../../../common/dto/id.dto';
