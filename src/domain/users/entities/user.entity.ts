@@ -10,6 +10,7 @@ import { RegistryDates } from '../../../common/embedded/registry-dates.embedded'
 import { Email } from '../../email/entities/email.entity';
 import { Order } from '../../orders/entities/order.entity';
 import { Exclude } from 'class-transformer';
+import { Role } from '../../../auth/roles/enums/role.enum';
 
 @Entity()
 export class User {
@@ -23,6 +24,14 @@ export class User {
   @Exclude()
   @Column()
   password: string;
+
+  @Column({
+    type: 'enum',
+    enum: Role,
+    enumName: 'role_enum',
+    default: Role.USER,
+  })
+  role: Role;
 
   @Column({ nullable: true, type: 'varchar' })
   salt: string;
