@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../domain/users/entities/user.entity';
 import { Repository } from 'typeorm';
@@ -6,22 +10,11 @@ import { HashingService } from './hashing/hashing.service';
 import { RequestUser } from './interfaces/request-user.interface';
 import { JwtService } from '@nestjs/jwt';
 import { JWTPayload } from './interfaces/jwt-payload.interface';
+import { Role } from './roles/enums/role.enum';
+import { NotFoundError } from 'rxjs';
 
 @Injectable()
 export class AuthService {
-  getProfile(id: number) {
-    return this.userRepository.findOneBy({ id });
-  }
-  async validateJwt(payload: JWTPayload) {
-    const user = await this.userRepository.findOneBy({ id: payload.sub });
-    if (!user) {
-      throw new UnauthorizedException();
-    }
-
-    const requestUser: RequestUser = { id: payload.sub };
-
-    return requestUser;
-  }
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
@@ -51,9 +44,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid password');
     }
 
-    const requestUser: RequestUser = { id: user.id };
-
-    return requestUser;
+    return this.createRequestUser(user);
   }
 
   login(user: RequestUser) {
@@ -62,5 +53,30 @@ export class AuthService {
     };
 
     return this.jwtService.sign(payload);
+  }
+
+  async assignRole(id: number, role: Role) {
+    const user = await this.userRepository.preload({ id, role });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return this.userRepository.save(user);
+  }
+  getProfile(id: number) {
+    return this.userRepository.findOneBy({ id });
+  }
+  async validateJwt(payload: JWTPayload) {
+    const user = await this.userRepository.findOneBy({ id: payload.sub });
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    return this.createRequestUser(user);
+  }
+
+  private createRequestUser(user: User): RequestUser {
+    return { id: user.id, role: user.role };
   }
 }

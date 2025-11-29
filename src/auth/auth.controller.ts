@@ -8,6 +8,8 @@ import {
   Get,
   Res,
   UseGuards,
+  Patch,
+  Param,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 
@@ -16,6 +18,8 @@ import { User } from './decorators/user.decorator';
 import type { RequestUser } from './interfaces/request-user.interface';
 import type { Response } from 'express';
 import { Public } from './decorators/public.decorator';
+import { IdDto } from '../common/dto/id.dto';
+import { RoleDto } from './roles/dto/role.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -41,5 +45,10 @@ export class AuthController {
   @Get('profile')
   getProfile(@User() { id }: RequestUser) {
     return this.authService.getProfile(id);
+  }
+
+  @Patch(':id/assign-role')
+  assignRole(@Param() { id }: IdDto, @Body() { role }: RoleDto) {
+    return this.authService.assignRole(id, role);
   }
 }
