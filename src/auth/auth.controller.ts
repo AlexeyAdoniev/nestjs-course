@@ -20,6 +20,8 @@ import type { Response } from 'express';
 import { Public } from './decorators/public.decorator';
 import { IdDto } from '../common/dto/id.dto';
 import { RoleDto } from './roles/dto/role.dto';
+import { Roles } from './decorators/roles.decorator';
+import { Role } from './roles/enums/role.enum';
 
 @Controller('auth')
 export class AuthController {
@@ -47,6 +49,7 @@ export class AuthController {
     return this.authService.getProfile(id);
   }
 
+  @Roles(Role.ADMIN)
   @Patch(':id/assign-role')
   assignRole(@Param() { id }: IdDto, @Body() { role }: RoleDto) {
     return this.authService.assignRole(id, role);

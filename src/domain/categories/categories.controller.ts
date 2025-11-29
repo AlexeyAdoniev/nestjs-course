@@ -14,11 +14,14 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 import { IdDto } from '../../common/dto/id.dto';
 import { PaginationDto } from '../../common/dto/pagination.dto';
 import { Public } from '../../auth/decorators/public.decorator';
+import { Roles } from '../../auth/decorators/roles.decorator';
+import { Role } from '../../auth/roles/enums/role.enum';
 
 @Controller('categories')
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
+  @Roles(Role.MANAGER)
   @Post()
   create(@Body() createCategoryDto: CreateCategoryDto) {
     return this.categoriesService.create(createCategoryDto);

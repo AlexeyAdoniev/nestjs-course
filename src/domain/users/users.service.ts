@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  ForbiddenException,
   Inject,
   Injectable,
   NotFoundException,
@@ -15,25 +16,12 @@ import { Repository } from 'typeorm';
 import { isNumber } from 'class-validator';
 import { PaginationDto } from '../../common/dto/pagination.dto';
 import { DEFAULT_PAGE_SIZE } from '../../common/util/common.constants';
+import { RequestUser } from '../../auth/interfaces/request-user.interface';
+import { compareUserId } from '../../auth/util/authorization.util';
+import { Role } from '../../auth/roles/enums/role.enum';
 
 @Injectable()
 export class UsersService {
-  async recover(id: number) {
-    const user = await this.userRepository.findOne({
-      where: { id },
-      withDeleted: true,
-    });
-
-    if (!user) {
-      throw new NotFoundException();
-    }
-
-    if (!user.registryDates.deletedAt) {
-      throw new ConflictException();
-    }
-
-    return this.userRepository.recover([user]);
-  }
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
@@ -86,7 +74,13 @@ export class UsersService {
     return user;
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
+  async update(
+    id: number,
+    updateUserDto: UpdateUserDto,
+    currentUser: RequestUser,
+  ) {
+    currentUser.role !== Role.ADMIN && compareUserId(id, currentUser.id);
+
     const user = await this.userRepository.findOneBy({ id });
 
     if (!user) {
@@ -111,9 +105,33 @@ export class UsersService {
     return this.userRepository.save(merged);
   }
 
-  remove(id: number, soft: boolean) {
+  remove(id: number, soft: boolean, currentUser: RequestUser) {
+    if (currentUser.role !== Role.ADMIN) {
+      compareUserId(id, currentUser.id);
+
+      if (!soft) throw new ForbiddenException();
+    }
+
     return soft
       ? this.userRepository.softRemove({ id })
       : this.userRepository.delete({ id });
+  }
+
+  async recover(id: number, currentUser: RequestUser) {
+    currentUser.role !== Role.ADMIN && compareUserId(id, currentUser.id);
+    const user = await this.userRepository.findOne({
+      where: { id },
+      withDeleted: true,
+    });
+
+    if (!user) {
+      throw new NotFoundException();
+    }
+
+    if (!user.registryDates.deletedAt) {
+      throw new ConflictException();
+    }
+
+    return this.userRepository.recover([user]);
   }
 }

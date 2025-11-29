@@ -8,6 +8,9 @@ import { Order } from '../orders/entities/order.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { OrderStatus } from '../orders/enums/order.status.enum';
 import { Payment } from './entities/payment.entity';
+import { RequestUser } from '../../auth/interfaces/request-user.interface';
+import { Role } from '../../auth/roles/enums/role.enum';
+import { compareUserId } from '../../auth/util/authorization.util';
 
 @Injectable()
 export class PaymentService {
@@ -19,17 +22,21 @@ export class PaymentService {
     private readonly paymentRepository: Repository<Payment>,
   ) {}
 
-  async payOrder(id: number) {
+  async payOrder(id: number, currentUser: RequestUser) {
     const order = await this.orderRepository.findOne({
       where: { id },
       relations: {
         payment: true,
+        customer: true,
       },
     });
 
     if (!order) {
       throw new NotFoundException();
     }
+
+    currentUser.role !== Role.ADMIN &&
+      compareUserId(order.customer.id, currentUser.id);
 
     if (order.payment) {
       throw new ConflictException();

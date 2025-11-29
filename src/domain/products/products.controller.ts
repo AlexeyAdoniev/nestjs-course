@@ -15,11 +15,15 @@ import { IdDto } from '../../common/dto/id.dto';
 
 import { PaginationDto } from '../../common/dto/pagination.dto';
 import { Public } from '../../auth/decorators/public.decorator';
+import { Roles } from '../../auth/decorators/roles.decorator';
+
+import { Role } from '../../auth/roles/enums/role.enum';
 
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
+  @Roles(Role.MANAGER)
   @Post()
   create(@Body() createProductDto: CreateProductDto) {
     return this.productsService.create(createProductDto);
