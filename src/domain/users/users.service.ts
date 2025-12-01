@@ -5,6 +5,7 @@ import {
   Injectable,
   NotFoundException,
   Query,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -19,6 +20,8 @@ import { DEFAULT_PAGE_SIZE } from '../../common/util/common.constants';
 import { RequestUser } from '../../auth/interfaces/request-user.interface';
 import { compareUserId } from '../../auth/util/authorization.util';
 import { Role } from '../../auth/roles/enums/role.enum';
+import { LoginDto } from '../../auth/dto/login.dto';
+import { HashingService } from '../../auth/hashing/hashing.service';
 
 @Injectable()
 export class UsersService {
@@ -27,6 +30,7 @@ export class UsersService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Email)
     private readonly emailRepository: Repository<Email>,
+    private readonly hashingService: HashingService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -117,15 +121,27 @@ export class UsersService {
       : this.userRepository.delete({ id });
   }
 
-  async recover(id: number, currentUser: RequestUser) {
-    currentUser.role !== Role.ADMIN && compareUserId(id, currentUser.id);
+  async recover(loginDto: LoginDto) {
+    const { email, password } = loginDto;
+
     const user = await this.userRepository.findOne({
-      where: { id },
+      where: { email: { email } },
       withDeleted: true,
     });
 
     if (!user) {
       throw new NotFoundException();
+    }
+
+    const encrypted = await this.hashingService.hash(password, user.salt);
+
+    const isMatch = this.hashingService.compare(
+      encrypted.hashedPassword,
+      user.password,
+    );
+
+    if (!isMatch) {
+      throw new UnauthorizedException('Invalid password');
     }
 
     if (!user.registryDates.deletedAt) {

@@ -4,4 +4,6 @@ export const ENV_VALIDATION_SCHEEMA = Joi.object({
   DB_PASS: Joi.required(),
   JTW_SECRET: Joi.required(),
   JTW_TTL: Joi.required(),
+  RATE_LIMIT_TTL: Joi.number().integer().positive().required(),
+  RATE_LIMIT_REQUESTS: Joi.number().integer().positive().required(),
 });

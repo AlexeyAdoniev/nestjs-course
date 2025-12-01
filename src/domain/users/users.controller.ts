@@ -19,6 +19,7 @@ import { RemoveDto } from '../orders/dto/remove.dto';
 import { Public } from '../../auth/decorators/public.decorator';
 import type { RequestUser } from '../../auth/interfaces/request-user.interface';
 import { User } from '../../auth/decorators/user.decorator';
+import { LoginDto } from '../../auth/dto/login.dto';
 
 @Controller('users')
 export class UsersController {
@@ -35,6 +36,11 @@ export class UsersController {
     return this.usersService.findAll(paginationDto);
   }
 
+  @Public()
+  @Patch('recover')
+  recover(@Body() loginDto: LoginDto) {
+    return this.usersService.recover(loginDto);
+  }
   @Get(':id')
   findOne(@Param() idDto: IdDto) {
     return this.usersService.findOne(idDto.id);
@@ -47,11 +53,6 @@ export class UsersController {
     @User() user: RequestUser,
   ) {
     return this.usersService.update(idDto.id, updateUserDto, user);
-  }
-
-  @Patch(':id/recover')
-  recover(@Param() idDto: IdDto, @User() user: RequestUser) {
-    return this.usersService.recover(idDto.id, user);
   }
 
   @Delete(':id')

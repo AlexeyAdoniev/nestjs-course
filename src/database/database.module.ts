@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigService, ConfigModule } from '@nestjs/config';
 import { SeedingModule } from './seeding/seeding.module';
+import { APP_FILTER } from '@nestjs/core';
+import { NotFoundExceptionFilter } from './exception-filters/not-found-exception/not-found-exception.filter';
 
 @Module({
   imports: [
@@ -24,6 +26,12 @@ import { SeedingModule } from './seeding/seeding.module';
       //   password: ConfigObject.
     }),
     SeedingModule,
+  ],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useClass: NotFoundExceptionFilter,
+    },
   ],
 })
 export class DatabaseModule {}

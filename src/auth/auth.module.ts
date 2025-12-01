@@ -17,7 +17,8 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './guards/jwt-auth-guard/jwt-auth-guard.guard';
 import { RolesGuard } from './guards/roles/roles.guard';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
-import { THROTTLER_MODULE_OPTIONS } from './util/auth.constants';
+
+import rateLimiterConfig from './config/rate-limiter.config';
 
 @Module({
   imports: [
@@ -25,7 +26,7 @@ import { THROTTLER_MODULE_OPTIONS } from './util/auth.constants';
     PassportModule,
     JwtModule.registerAsync(jwtConfig.asProvider()),
     ConfigModule.forFeature(jwtConfig),
-    ThrottlerModule.forRoot(THROTTLER_MODULE_OPTIONS),
+    ThrottlerModule.forRootAsync(rateLimiterConfig.asProvider()),
   ],
   controllers: [AuthController],
   providers: [
