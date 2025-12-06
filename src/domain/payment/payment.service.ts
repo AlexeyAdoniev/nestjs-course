@@ -23,17 +23,13 @@ export class PaymentService {
   ) {}
 
   async payOrder(id: number, currentUser: RequestUser) {
-    const order = await this.orderRepository.findOne({
+    const order = await this.orderRepository.findOneOrFail({
       where: { id },
       relations: {
         payment: true,
         customer: true,
       },
     });
-
-    if (!order) {
-      throw new NotFoundException();
-    }
 
     currentUser.role !== Role.ADMIN &&
       compareUserId(order.customer.id, currentUser.id);

@@ -18,9 +18,14 @@ export class User {
   id: number;
   @Column()
   name: string;
+
+  @Column({ name: 'emailId', unique: true, nullable: true })
+  emailId: number;
+
   @OneToOne(() => Email)
-  @JoinColumn()
+  @JoinColumn({ name: 'emailId' })
   email: Email;
+
   @Exclude()
   @Column()
   password: string;

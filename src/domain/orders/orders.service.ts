@@ -45,7 +45,7 @@ export class OrdersService {
   }
 
   async findOne(id: number) {
-    const order = await this.orderRepository.findOne({
+    return this.orderRepository.findOneOrFail({
       where: { id },
       relations: {
         items: {
@@ -56,11 +56,6 @@ export class OrdersService {
       },
       cache: 60_000,
     });
-
-    if (!order) {
-      throw new NotFoundException('Order not found');
-    }
-    return order;
   }
 
   async remove(id: number) {

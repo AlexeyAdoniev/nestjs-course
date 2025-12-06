@@ -5,7 +5,7 @@ import { RegistryDates } from '../../../common/embedded/registry-dates.embedded'
 export class Email {
   @PrimaryGeneratedColumn()
   id: number;
-  @Column()
+  @Column({ unique: true })
   email: string;
 
   @Column()

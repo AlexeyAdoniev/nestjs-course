@@ -33,17 +33,13 @@ export class ProductsService {
   }
 
   async findOne(id: number) {
-    const product = await this.productRepository.findOne({
+    return this.productRepository.findOneOrFail({
       where: { id },
       relations: {
         categories: true,
       },
       cache: 60_000,
     });
-    if (!product) {
-      throw new NotFoundException('Product not found');
-    }
-    return product;
   }
 
   async update(id: number, updateProductDto: UpdateProductDto) {

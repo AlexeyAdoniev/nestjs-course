@@ -5,9 +5,13 @@ export const HttpError = {
     status: HttpStatus.NOT_FOUND,
     error: 'Not Found',
   },
+  CONFLICT: {
+    status: HttpStatus.CONFLICT,
+    error: 'Conflict',
+  },
 } as const satisfies Record<string, IHttpError>;
 
-interface IHttpError {
+export interface IHttpError {
   readonly status: HttpStatus;
   readonly error: string;
 }
