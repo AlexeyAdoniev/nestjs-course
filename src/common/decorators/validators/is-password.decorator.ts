@@ -15,6 +15,15 @@ function isPassword(value: string): boolean {
   return matches(value, regex);
 }
 
+/**
+ * Requires:
+ * 1. 8 to 20 characters
+ * 2. At least one
+ * - Lowercase letter
+ * - Uppercase letter
+ * - Number
+ * - Special character
+ */
 export const IsPassword = (
   validationOptions?: ValidationOptions,
 ): PropertyDecorator =>

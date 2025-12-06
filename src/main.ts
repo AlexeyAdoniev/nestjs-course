@@ -11,6 +11,8 @@ async function bootstrap() {
     .setTitle('Test')
     .setDescription('Documentation for the shop API')
     .setVersion('1.0')
+    .addBearerAuth()
+    .addSecurityRequirements('bearer')
     .build();
 
   const documentFactory = () => SwaggerModule.createDocument(app, config);

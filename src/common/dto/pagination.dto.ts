@@ -4,8 +4,8 @@ import { IsCardinal } from '../decorators/validators/is-cardinal.decorator';
 export class PaginationDto {
   @IsCardinal()
   @IsOptional()
-  limit: number;
+  limit?: number;
   @IsCardinal()
   @IsOptional()
-  offset: number;
+  offset?: number;
 }

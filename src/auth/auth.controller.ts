@@ -11,6 +11,7 @@ import {
   Patch,
   Param,
 } from '@nestjs/common';
+import { ApiBody, ApiOkResponse } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 
 import { LocalAuthGuardGuard } from './guards/local-auth-guard/local-auth-guard.guard';
@@ -22,11 +23,23 @@ import { IdDto } from '../common/dto/id.dto';
 import { RoleDto } from './roles/dto/role.dto';
 import { Roles } from './decorators/roles.decorator';
 import { Role } from './roles/enums/role.enum';
+import { LoginDto } from './dto/login.dto';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @ApiBody({ type: LoginDto })
+  @ApiOkResponse({
+    headers: {
+      'Set-Cookie': {
+        description: 'JWT cookie',
+        schema: {
+          type: 'string',
+        },
+      },
+    },
+  })
   @HttpCode(HttpStatus.OK)
   @UseGuards(LocalAuthGuardGuard)
   @Public()

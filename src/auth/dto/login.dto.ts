@@ -7,6 +7,15 @@ export class LoginDto {
   @IsEmail()
   readonly email: string;
 
+  /**
+   * Requires:
+   * 1. 8 to 20 characters
+   * 2. At least one
+   * - Lowercase letter
+   * - Uppercase letter
+   * - Number
+   * - Special character
+   */
   @IsPassword()
   readonly password: string;
 }
