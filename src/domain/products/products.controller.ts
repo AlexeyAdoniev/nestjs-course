@@ -7,6 +7,11 @@ import {
   Param,
   Delete,
   Query,
+  UseInterceptors,
+  UploadedFile,
+  ParseFilePipe,
+  MaxFileSizeValidator,
+  FileTypeValidator,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -18,6 +23,7 @@ import { Public } from '../../auth/decorators/public.decorator';
 import { Roles } from '../../auth/decorators/roles.decorator';
 
 import { Role } from '../../auth/roles/enums/role.enum';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('products')
 export class ProductsController {
@@ -49,5 +55,22 @@ export class ProductsController {
   @Delete(':id')
   remove(@Param() { id }: IdDto) {
     return this.productsService.remove(id);
+  }
+
+  @UseInterceptors(FileInterceptor('file'))
+  @Post(':id/image')
+  uploadImage(
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 200 * 1024 }),
+          new FileTypeValidator({ fileType: /png|jpe?g/ }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+  ) {
+    console.log(file, 'body');
+    return 'Uploaded';
   }
 }

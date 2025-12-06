@@ -9,6 +9,7 @@ import { PaymentModule } from './domain/payment/payment.module';
 import { CategoriesModule } from './domain/categories/categories.module';
 import { ProductsModule } from './domain/products/products.module';
 import { AuthModule } from './auth/auth.module';
+import { DocsModule } from './docs/docs.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { AuthModule } from './auth/auth.module';
     CategoriesModule,
     ProductsModule,
     AuthModule,
+    DocsModule,
   ],
   controllers: [],
   providers: [],
