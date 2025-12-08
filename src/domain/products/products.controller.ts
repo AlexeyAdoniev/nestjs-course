@@ -12,6 +12,7 @@ import {
   ParseFilePipe,
   MaxFileSizeValidator,
   FileTypeValidator,
+  UploadedFiles,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -23,7 +24,9 @@ import { Public } from '../../auth/decorators/public.decorator';
 import { Roles } from '../../auth/decorators/roles.decorator';
 
 import { Role } from '../../auth/roles/enums/role.enum';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { createFileValidators } from '../../files/util/file-validation.util';
+import { MaxFileCount } from '../../files/util/file.constants';
 
 @Controller('products')
 export class ProductsController {
@@ -57,20 +60,17 @@ export class ProductsController {
     return this.productsService.remove(id);
   }
 
-  @UseInterceptors(FileInterceptor('file'))
-  @Post(':id/image')
+  @UseInterceptors(FilesInterceptor('files', MaxFileCount.PRODUCT_IMAGES))
+  @Post(':id/images')
   uploadImage(
-    @UploadedFile(
+    @UploadedFiles(
       new ParseFilePipe({
-        validators: [
-          new MaxFileSizeValidator({ maxSize: 200 * 1024 }),
-          new FileTypeValidator({ fileType: /png|jpe?g/ }),
-        ],
+        validators: createFileValidators('200KB', ['png', 'jpeg', 'pdf']),
       }),
     )
-    file: Express.Multer.File,
+    files: Express.Multer.File[],
   ) {
-    console.log(file, 'body');
+    console.log(files, 'body');
     return 'Uploaded';
   }
 }

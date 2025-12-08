@@ -10,6 +10,7 @@ import { CategoriesModule } from './domain/categories/categories.module';
 import { ProductsModule } from './domain/products/products.module';
 import { AuthModule } from './auth/auth.module';
 import { DocsModule } from './docs/docs.module';
+import { FilesModule } from './files/files.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { DocsModule } from './docs/docs.module';
     ProductsModule,
     AuthModule,
     DocsModule,
+    FilesModule,
   ],
   controllers: [],
   providers: [],
