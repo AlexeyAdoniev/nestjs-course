@@ -1,4 +1,4 @@
-import { Injectable, StreamableFile } from '@nestjs/common';
+import { ConflictException, Injectable, StreamableFile } from '@nestjs/common';
 import { StorageService } from './storage.service';
 import {
   createReadStream,
@@ -10,13 +10,18 @@ import {
 } from 'fs-extra';
 import { join } from 'node:path';
 import { BASE_PATH } from '../util/file.constants';
+import { Readable } from 'typeorm/platform/PlatformTools.js';
 
 @Injectable()
 export class FseService implements StorageService {
   async saveFile(path: string, file: Express.Multer.File) {
+    const { buffer, originalname } = file;
+    const name = this.genUniqueFileName(originalname);
+
     const { promise, resolve, reject } = Promise.withResolvers();
-    const ws = createWriteStream(join(BASE_PATH, path, file.originalname));
-    file.stream.pipe(ws).on('finish', () => {
+    const ws = createWriteStream(join(BASE_PATH, path, name));
+    const stream = Readable.from(buffer);
+    stream.pipe(ws).on('finish', () => {
       resolve(true);
     });
     await promise;
@@ -47,5 +52,14 @@ export class FseService implements StorageService {
     if (!(await pathExists(fullPath))) {
       throw new Error('Path not found');
     }
+  }
+  validateFileCount(count: number, max: number): void {
+    if (count > max) {
+      throw new ConflictException('File count exceeds max limit');
+    }
+  }
+  genUniqueFileName(filename: string): string {
+    const uniquePrefix = `${Date.now()}-${Math.random() * 1e9}`;
+    return `${uniquePrefix}-${filename}`;
   }
 }

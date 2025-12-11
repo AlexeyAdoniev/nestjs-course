@@ -27,6 +27,7 @@ import { Role } from '../../auth/roles/enums/role.enum';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { createFileValidators } from '../../files/util/file-validation.util';
 import { MaxFileCount } from '../../files/util/file.constants';
+import { IdFilenameDto } from '../../files/dto/id-filename.dto';
 
 @Controller('products')
 export class ProductsController {
@@ -60,9 +61,12 @@ export class ProductsController {
     return this.productsService.remove(id);
   }
 
+  @Public()
+  // @Roles(Role.MANAGER)
   @UseInterceptors(FilesInterceptor('files', MaxFileCount.PRODUCT_IMAGES))
   @Post(':id/images')
   uploadImage(
+    @Param() { id }: IdDto,
     @UploadedFiles(
       new ParseFilePipe({
         validators: createFileValidators('200KB', ['png', 'jpeg', 'pdf']),
@@ -70,7 +74,19 @@ export class ProductsController {
     )
     files: Express.Multer.File[],
   ) {
-    console.log(files, 'body');
-    return 'Uploaded';
+    return this.productsService.uploadImages(id, files);
+  }
+
+  @Public()
+  @Get(':id/images/:filename')
+  downloadImage(@Param() { id, filename }: IdFilenameDto) {
+    return this.productsService.downloadImage(id, filename);
+  }
+
+  @Public()
+  //@Roles(Role.MANAGER)
+  @Delete(':id/images/:filename')
+  deleteImage(@Param() { id, filename }: IdFilenameDto) {
+    return this.productsService.deleteImage(id, filename);
   }
 }

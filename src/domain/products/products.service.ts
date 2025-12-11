@@ -11,14 +11,33 @@ import { Product } from './entities/product.entity';
 import { Repository } from 'typeorm';
 import { PaginationDto } from '../../common/dto/pagination.dto';
 import { DEFAULT_PAGE_SIZE } from '../../common/util/common.constants';
+import { StorageService } from '../../files/storage/storage.service';
+import { join } from 'node:path';
 
 @Injectable()
 export class ProductsService {
   constructor(
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
+
+    private readonly storageService: StorageService,
   ) {}
 
+  async deleteImage(id: number, filename: string) {
+    const fullPath = join(id.toString(), filename);
+    await this.storageService.validatePath(fullPath);
+    return this.storageService.delete(fullPath);
+  }
+  async downloadImage(id: number, filename: string) {
+    const fullPath = join(id.toString(), filename);
+    await this.storageService.validatePath(fullPath);
+    return this.storageService.getFile(fullPath);
+  }
+  async uploadImages(id: number, files: Express.Multer.File[]) {
+    const file = files.at(0);
+    await this.storageService.createDir(id.toString(), file);
+    return this.storageService.saveFile(id.toString(), file);
+  }
   async create(createProductDto: CreateProductDto) {
     const product = this.productRepository.create(createProductDto);
     return this.productRepository.save(product);
