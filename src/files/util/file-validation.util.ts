@@ -1,7 +1,9 @@
 import {
   FileTypeValidator,
   FileValidator,
+  HttpStatus,
   MaxFileSizeValidator,
+  ParseFilePipe,
 } from '@nestjs/common';
 import { NonEmptyArray } from '../../common/util/array.utils';
 
@@ -19,7 +21,7 @@ const createFileTypeRegex = (fileTypes: FileType[]) => {
 
 export const createFileValidators = (
   maxSize: FileSize,
-  fileTypes: NonEmptyArray<FileType>,
+  fileTypes: FileType[],
 ): FileValidator[] => {
   const fileTypesRegex = createFileTypeRegex(fileTypes);
   return [
@@ -28,3 +30,12 @@ export const createFileValidators = (
     new FileSignature(),
   ];
 };
+
+export const createParseFilePipe = (
+  maxSize: FileSize,
+  fileTypes: NonEmptyArray<FileType>,
+) =>
+  new ParseFilePipe({
+    validators: createFileValidators(maxSize, fileTypes),
+    errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+  });

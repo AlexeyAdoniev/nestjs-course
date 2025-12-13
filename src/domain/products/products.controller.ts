@@ -25,7 +25,10 @@ import { Roles } from '../../auth/decorators/roles.decorator';
 
 import { Role } from '../../auth/roles/enums/role.enum';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
-import { createFileValidators } from '../../files/util/file-validation.util';
+import {
+  createFileValidators,
+  createParseFilePipe,
+} from '../../files/util/file-validation.util';
 import { MaxFileCount } from '../../files/util/file.constants';
 import { IdFilenameDto } from '../../files/dto/id-filename.dto';
 
@@ -67,11 +70,7 @@ export class ProductsController {
   @Post(':id/images')
   uploadImage(
     @Param() { id }: IdDto,
-    @UploadedFiles(
-      new ParseFilePipe({
-        validators: createFileValidators('200KB', ['png', 'jpeg', 'pdf']),
-      }),
-    )
+    @UploadedFiles(createParseFilePipe('2MB', ['png', 'jpeg', 'pdf']))
     files: Express.Multer.File[],
   ) {
     return this.productsService.uploadImages(id, files);

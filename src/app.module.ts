@@ -11,6 +11,7 @@ import { ProductsModule } from './domain/products/products.module';
 import { AuthModule } from './auth/auth.module';
 import { DocsModule } from './docs/docs.module';
 import { FilesModule } from './files/files.module';
+import { StaticModule } from './static/static.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { FilesModule } from './files/files.module';
     AuthModule,
     DocsModule,
     FilesModule,
+    StaticModule,
   ],
   controllers: [],
   providers: [],
