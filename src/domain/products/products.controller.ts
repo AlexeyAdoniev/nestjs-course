@@ -24,13 +24,17 @@ import { Public } from '../../auth/decorators/public.decorator';
 import { Roles } from '../../auth/decorators/roles.decorator';
 
 import { Role } from '../../auth/roles/enums/role.enum';
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { createParseFilePipe } from '../../files/util/file-validation.util';
 import {
-  createFileValidators,
-  createParseFilePipe,
-} from '../../files/util/file-validation.util';
-import { MaxFileCount } from '../../files/util/file.constants';
+  MaxFileCount,
+  MULTIPART_FORMDATA_KEY,
+} from '../../files/util/file.constants';
 import { IdFilenameDto } from '../../files/dto/id-filename.dto';
+import { ApiBody, ApiConsumes, ApiOkResponse } from '@nestjs/swagger';
+import { FilesSchema } from '../../files/validators/swagger/decorator/schemas/files.schema';
+import { FileSchema } from '../../files/validators/swagger/decorator/schemas/file.schema';
+import { BodyInterceptor } from '../../files/interceptors/body.interceptor/body.interceptor.interceptor';
 
 @Controller('products')
 export class ProductsController {
@@ -64,18 +68,25 @@ export class ProductsController {
     return this.productsService.remove(id);
   }
 
+  @ApiConsumes(MULTIPART_FORMDATA_KEY)
+  @ApiBody({ type: FilesSchema })
   @Public()
   // @Roles(Role.MANAGER)
-  @UseInterceptors(FilesInterceptor('files', MaxFileCount.PRODUCT_IMAGES))
+  @UseInterceptors(
+    FilesInterceptor('files', MaxFileCount.PRODUCT_IMAGES),
+    //BodyInterceptor,
+  )
   @Post(':id/images')
   uploadImage(
     @Param() { id }: IdDto,
+    //@Body() createProductDto: CreateProductDto,
     @UploadedFiles(createParseFilePipe('2MB', ['png', 'jpeg', 'pdf']))
     files: Express.Multer.File[],
   ) {
     return this.productsService.uploadImages(id, files);
   }
 
+  @ApiOkResponse({ type: FileSchema })
   @Public()
   @Get(':id/images/:filename')
   downloadImage(@Param() { id, filename }: IdFilenameDto) {
