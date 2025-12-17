@@ -9,8 +9,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import { Category } from './entities/category.entity';
 import { Repository } from 'typeorm';
-import { PaginationDto } from '../../common/dto/pagination.dto';
-import { DEFAULT_PAGE_SIZE } from '../../common/util/common.constants';
+import { PaginationDto } from '../../querying/dto/pagination.dto';
+import { DEFAULT_PAGE_SIZE } from '../../querying/util/querying.constants';
 
 @Injectable()
 export class CategoriesService {
@@ -24,10 +24,10 @@ export class CategoriesService {
     return this.categoryRepository.save(category);
   }
 
-  findAll({ offset, limit }: PaginationDto) {
+  findAll({ limit }: PaginationDto) {
     return this.categoryRepository.find({
-      skip: offset,
-      take: limit ?? DEFAULT_PAGE_SIZE.CATEGORY,
+      // skip: offset,
+      // take: limit ?? DEFAULT_PAGE_SIZE.CATEGORY,
       cache: 60_000,
     });
   }

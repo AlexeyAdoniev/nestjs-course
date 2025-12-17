@@ -12,6 +12,7 @@ import { AuthModule } from './auth/auth.module';
 import { DocsModule } from './docs/docs.module';
 import { FilesModule } from './files/files.module';
 import { StaticModule } from './static/static.module';
+import { QueryingModule } from './querying/querying.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { StaticModule } from './static/static.module';
     DocsModule,
     FilesModule,
     StaticModule,
+    QueryingModule,
   ],
   controllers: [],
   providers: [],

@@ -14,7 +14,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 
 import { IdDto } from '../../common/dto/id.dto';
 
-import { PaginationDto } from '../../common/dto/pagination.dto';
+import { PaginationDto } from '../../querying/dto/pagination.dto';
 import { RemoveDto } from '../orders/dto/remove.dto';
 import { Public } from '../../auth/decorators/public.decorator';
 import type { RequestUser } from '../../auth/interfaces/request-user.interface';

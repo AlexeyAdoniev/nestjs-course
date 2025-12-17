@@ -19,7 +19,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { IdDto } from '../../common/dto/id.dto';
 
-import { PaginationDto } from '../../common/dto/pagination.dto';
+import { PaginationDto } from '../../querying/dto/pagination.dto';
 import { Public } from '../../auth/decorators/public.decorator';
 import { Roles } from '../../auth/decorators/roles.decorator';
 

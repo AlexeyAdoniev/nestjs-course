@@ -15,8 +15,8 @@ import { User } from './entities/user.entity';
 import { Email } from '../email/entities/email.entity';
 import { Repository } from 'typeorm';
 import { isNumber } from 'class-validator';
-import { PaginationDto } from '../../common/dto/pagination.dto';
-import { DEFAULT_PAGE_SIZE } from '../../common/util/common.constants';
+import { PaginationDto } from '../../querying/dto/pagination.dto';
+import { DEFAULT_PAGE_SIZE } from '../../querying/util/querying.constants';
 import { RequestUser } from '../../auth/interfaces/request-user.interface';
 import { compareUserId } from '../../auth/util/authorization.util';
 import { Role } from '../../auth/roles/enums/role.enum';
@@ -44,10 +44,10 @@ export class UsersService {
     return this.userRepository.save(user);
   }
 
-  findAll({ offset, limit }: PaginationDto) {
+  findAll({ limit }: PaginationDto) {
     return this.userRepository.find({
-      skip: offset,
-      take: limit ?? DEFAULT_PAGE_SIZE.USER,
+      // skip: offset,
+      // take: limit ?? DEFAULT_PAGE_SIZE.USER,
       select: {
         email: {
           id: true,
