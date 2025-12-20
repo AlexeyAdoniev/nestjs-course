@@ -9,21 +9,21 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import { Product } from './entities/product.entity';
 import { ILike, Repository } from 'typeorm';
-import { PaginationDto } from '../../querying/dto/pagination.dto';
 import { DEFAULT_PAGE_SIZE } from '../../querying/util/querying.constants';
 import { StorageService } from '../../files/storage/storage.service';
 import { join } from 'node:path';
 import { PaginationService } from '../../querying/pagination.service';
 import { ProductsQueryDto } from './dto/querying/products-query.dto';
+import { FilteringService } from '../../querying/filtering.service';
 
 @Injectable()
 export class ProductsService {
   constructor(
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
-
     private readonly storageService: StorageService,
     private readonly paginationService: PaginationService,
+    private readonly filteringService: FilteringService,
   ) {}
 
   async deleteImage(id: number, filename: string) {
@@ -52,8 +52,8 @@ export class ProductsService {
     const offset = this.paginationService.calcOffset(limit, page);
     const [data, count] = await this.productRepository.findAndCount({
       where: {
-        name: name ? ILike(`%${name}%`) : undefined,
-        price,
+        name: this.filteringService.contains(name),
+        price: this.filteringService.compare(price),
         categories: { id: category },
       },
       relations: { categories: true },
