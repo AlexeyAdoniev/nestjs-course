@@ -31,8 +31,6 @@ export class ProductsSubscriber implements EntitySubscriberInterface<Product> {
   private readonly IMAGES_FILENAMES = 'imagesFilenames';
 
   private async getImagesFilenames(id: number) {
-    // const fullPath = join( id.toString());
-    console.log(join(BASE_PATH, id.toString()));
     if (!(await pathExists(join(BASE_PATH, id.toString())))) return;
 
     return this.storageService.getDirFileNames(id.toString());

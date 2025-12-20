@@ -3,8 +3,6 @@ import { HashingService } from './hashing.service';
 import { randomBytes, scrypt, timingSafeEqual } from 'node:crypto';
 import { ConfigService } from '@nestjs/config';
 
-console.log(randomBytes(16).toString('base64'), 'yyy');
-
 @Injectable()
 export class BcryptService implements HashingService {
   constructor(private readonly config: ConfigService) {}

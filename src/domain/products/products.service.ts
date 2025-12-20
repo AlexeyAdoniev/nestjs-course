@@ -8,12 +8,13 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { Product } from './entities/product.entity';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { PaginationDto } from '../../querying/dto/pagination.dto';
 import { DEFAULT_PAGE_SIZE } from '../../querying/util/querying.constants';
 import { StorageService } from '../../files/storage/storage.service';
 import { join } from 'node:path';
 import { PaginationService } from '../../querying/pagination.service';
+import { ProductsQueryDto } from './dto/querying/products-query.dto';
 
 @Injectable()
 export class ProductsService {
@@ -45,23 +46,27 @@ export class ProductsService {
     return this.productRepository.save(product);
   }
 
-  async findAll(pageaginationDto: PaginationDto) {
-    const limit = pageaginationDto.limit ?? DEFAULT_PAGE_SIZE.PRODUCT;
-    const offset = this.paginationService.calcOffset(
-      limit,
-      pageaginationDto.page,
-    );
+  async findAll(queryDto: ProductsQueryDto) {
+    const { page, name, price, category, sort, order } = queryDto;
+    const limit = queryDto.limit ?? DEFAULT_PAGE_SIZE.PRODUCT;
+    const offset = this.paginationService.calcOffset(limit, page);
     const [data, count] = await this.productRepository.findAndCount({
+      where: {
+        name: name ? ILike(`%${name}%`) : undefined,
+        price,
+        categories: { id: category },
+      },
+      relations: { categories: true },
+      select: { categories: { name: true } },
+      order: {
+        [sort]: order,
+      },
       skip: offset,
       take: limit,
       cache: 60_000,
     });
 
-    const meta = this.paginationService.createMeta(
-      limit,
-      pageaginationDto.page,
-      count,
-    );
+    const meta = this.paginationService.createMeta(limit, page, count);
 
     return { data, meta };
   }

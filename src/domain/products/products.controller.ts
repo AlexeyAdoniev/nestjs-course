@@ -35,6 +35,9 @@ import { ApiBody, ApiConsumes, ApiOkResponse } from '@nestjs/swagger';
 import { FilesSchema } from '../../files/validators/swagger/decorator/schemas/files.schema';
 import { FileSchema } from '../../files/validators/swagger/decorator/schemas/file.schema';
 import { BodyInterceptor } from '../../files/interceptors/body.interceptor/body.interceptor.interceptor';
+import { ApiPaginatedResponse } from '../../querying/swagger/decorators/api-paginated-response.decorator';
+import { Product } from './entities/product.entity';
+import { ProductsQueryDto } from './dto/querying/products-query.dto';
 
 @Controller('products')
 export class ProductsController {
@@ -46,9 +49,10 @@ export class ProductsController {
     return this.productsService.create(createProductDto);
   }
 
+  @ApiPaginatedResponse(Product)
   @Public()
   @Get()
-  findAll(@Query() PaginationDto: PaginationDto) {
+  findAll(@Query() PaginationDto: ProductsQueryDto) {
     return this.productsService.findAll(PaginationDto);
   }
 
